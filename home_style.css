@@ -1,0 +1,100 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+/* Estilo da nav bar */
+.navbar {
+    background-color: #0066CC;
+    padding: 10px;
+    text-align: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar li {
+    display: inline;
+    margin-right: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
+
+h1 {
+    margin-top: 20px;
+    font-size: 2em;
+    color: #333;
+}
+
+.intro {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.card {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 300px;
+    margin: 50px auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #30a0d0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1e6b99;
+}
+
+.hidden {
+    display: none;
+}
+
+.active {
+    display: block;
+}
+
+/* Estilizando apenas os labels dentro do cartão */
+.card label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+}
+
+.card input[type="radio"] {
+    margin-right: 10px;
+}

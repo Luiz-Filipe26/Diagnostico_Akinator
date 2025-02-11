@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de Treinamento</title>
+    <link rel="stylesheet" href="./table.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">Início</a></li>
+            <li><a href="/table">Tabela</a></li>
+        </ul>
+    </nav>
+
+
+    <h1>Tabela de Treinamento</h1>
+
+    <div class="container">
+        <div class="table-container">
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>Doença/Sintoma</th>
+                        <th>
+                            <input type="text" value="Sintoma 1">
+                            <button class="remove-btn" onclick="removeColumn(event)"></button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" value="Doença 1">
+                            <button class="remove-btn" onclick="removeRow(event)"></button>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="Irrelevante">Irrelevante</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Forte">Forte</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn add-row-btn" onclick="addRow()"></button>
+        </div>
+        <button class="btn add-column-btn" onclick="addColumn()"></button>
+    </div>
+
+    <!-- Container para os botões fora da tabela -->
+    <div class="button-container">
+        <button onclick="generateJSON()">Salvar tabela na memória</button>
+        <label for="fileUpload">Fazer upload de tabela JSON</label>
+        <input type="file" name="fileUpload" id="fileUpload" onchange="uploadJSON(event)" />
+        <button onclick="downloadJSON()">Baixar tabela JSON</button>
+    </div>
+
+    <pre id="result"></pre>
+
+    <script type="module" src="./table.js"></script>
+
+</body>
+
+</html>
