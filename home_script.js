@@ -1,3 +1,5 @@
+import Id3_analyzer from "./assets/scripts/Id3_analyzer.js";
+
 let symptoms = [];
 let currentIndex = 0;
 const answers = {};
@@ -27,7 +29,7 @@ function nextSymptom() {
         return;
     }
 
-    answers[symptoms[currentIndex]] = convertIntensityToNumber(selected.value);
+    answers[symptoms[currentIndex]] = selected.value;
     selected.checked = false;
 
     currentIndex++;
@@ -35,53 +37,30 @@ function nextSymptom() {
         document.getElementById("symptom").textContent = symptoms[currentIndex];
         showMessage("");
     } else {
-        evaluateProbableDisease(symptoms, answers);
+        finishAnalysis();
     }
 }
 
-function convertIntensityToNumber(intensity) {
-    switch (intensity) {
-        case "Irrelevante":
-            return 1;
-        case "Médio":
-            return 2;
-        case "Forte":
-            return 3;
-        default:
-            return 0;
-    }
+function structureTableDataForAnalysis(tableData) {
+    return tableData.rows.map(row => ({
+        disease: row.disease,
+        symptoms: tableData.columns
+            .map((col, index) => row.values[index] !== "Irrelevante" ? `${col}_${row.values[index]}` : null)
+            .filter(Boolean)
+    }));
 }
 
-function evaluateProbableDisease(symptoms, answers) {
-    const diseaseScores = new Map();
+function strucutureAnswersForAnalysis(answers) {
+    return Object.keys(answers)
+        .filter(symptom => answers[symptom] !== "Irrelevante") // Filtra os sintomas com resposta "Irrelevante"
+        .map(symptom => `${symptom}_${answers[symptom]}`); // Combina o sintoma com a resposta
+}
 
-    for (let i = 0; i < tableData.rows.length; i++) {
-        let score = 0;
-
-        for (let j = 0; j < symptoms.length; j++) {
-            const answerValue = answers[symptoms[j]];
-            const tableValue = convertIntensityToNumber(tableData.rows[i].values[j]);
-            score += Math.abs(answerValue - tableValue);
-        }
-
-        const disease = tableData.rows[i].disease;
-        if (diseaseScores.has(disease)) {
-            diseaseScores.set(disease, diseaseScores.get(disease) + score);
-        } else {
-            diseaseScores.set(disease, score);
-        }
-    }
-
-    let probableDisease = "Doença desconhecida";
-    let minScore = Infinity;
-
-    for (let [disease, score] of diseaseScores) {
-        if (score < minScore) {
-            minScore = score;
-            probableDisease = disease;
-        }
-    }
-
+function finishAnalysis() {
+    document.getElementById("evaluationCard").classList.remove("active");
+    const trainingData = structureTableDataForAnalysis(tableData);
+    const answersForAnalysis = strucutureAnswersForAnalysis(answers);
+    const probableDisease = Id3_analyzer.getProbableResult(trainingData, answersForAnalysis);
     showMessage(`A doença mais provável é: ${probableDisease}`);
 }
 
