@@ -11,51 +11,55 @@ loadTableFromJSON();
 
 function loadTableFromJSON() {
     const data = localStorage.getItem("tableData");
-    
-    if (data) {
-        const jsonData = JSON.parse(data);
-        
-        // Limpar a tabela atual
-        const table = document.getElementById("table");
-        const tbody = table.querySelector("tbody");
-        tbody.innerHTML = "";  // Limpa as linhas da tabela
 
-        // Popula os cabeçalhos de coluna
-        const headerRow = table.tHead.rows[0];
-        jsonData.columns.forEach((column, index) => {
-            if (index > 0) {
-                const newColumn = document.createElement("th");
-                newColumn.innerHTML = `
-                    <input type="text" value="${column}">
-                    <button class="remove-btn" onclick="removeColumn(event)"></button>
-                `;
-                headerRow.appendChild(newColumn);
-            }
-        });
+    if (!data) {
+        return resultToUser.textContent = 'Nenhuma tabela salva na memória.';
+    }
 
-        // Popula as linhas da tabela
-        jsonData.rows.forEach(rowData => {
-            const newRow = tbody.insertRow();
-            
-            // Primeira célula (Doença)
-            const firstCell = newRow.insertCell();
-            firstCell.innerHTML = `
+    const jsonData = JSON.parse(data);
+
+    // Referências à tabela
+    const table = document.getElementById("table");
+    const thead = table.querySelector("thead");
+    const tbody = table.querySelector("tbody");
+
+    // Limpa a tabela atual, mantendo apenas a primeira coluna (Doença/Sintoma)
+    const headerRow = thead.rows[0];
+    headerRow.innerHTML = '<th>Doença/Sintoma</th>';
+    tbody.innerHTML = "";
+
+    // Adiciona as colunas do JSON
+    jsonData.columns.forEach(column => {
+        const newColumn = document.createElement("th");
+        newColumn.innerHTML = `
+                <input type="text" value="${column}">
+                <button class="remove-btn" onclick="removeColumn(event)"></button>
+            `;
+        headerRow.appendChild(newColumn);
+    });
+
+    // Adiciona as linhas da tabela
+    jsonData.rows.forEach(rowData => {
+        const newRow = tbody.insertRow();
+
+        // Primeira célula (Doença)
+        const firstCell = newRow.insertCell();
+        firstCell.innerHTML = `
                 <input type="text" value="${rowData.disease}">
                 <button class="remove-btn" onclick="removeRow(this)"></button>
             `;
 
-            // Células de sintomas
-            rowData.values.forEach(value => {
-                const cell = newRow.insertCell();
-                cell.innerHTML = createSelectWithValue(value);
-            });
+        // Células de sintomas
+        rowData.values.forEach(value => {
+            const cell = newRow.insertCell();
+            cell.innerHTML = createSelectWithValue(value);
         });
+    });
 
-        resultToUser.textContent = 'Tabela carregada com sucesso!';
-    } else {
-        resultToUser.textContent = 'Nenhuma tabela salva na memória.';
-    }
+    resultToUser.textContent = 'Tabela carregada com sucesso!';
 }
+
+
 
 function addColumn() {
     const table = document.getElementById("table");
@@ -169,7 +173,7 @@ function uploadJSON(event) {
     reader.onload = function (e) {
         try {
             const jsonData = JSON.parse(e.target.result);
-            
+
             if (jsonData.columns && Array.isArray(jsonData.rows)) {
                 localStorage.setItem("tableData", JSON.stringify(jsonData));
                 resultToUser.textContent = 'Tabela carregada com sucesso!';
