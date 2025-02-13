@@ -119,11 +119,14 @@ export default class Id3_analyzer {
 
     // initial entropy of the disease set
     static calculateInitialEntropy(diseaseCounts, totalCases) {
+        if (totalCases === 0) return 0;
+    
         return [...diseaseCounts.values()].reduce((totalEntropy, count) => {
             const probability = count / totalCases;
-            return totalEntropy - probability * Math.log2(probability);
+            return totalEntropy - (probability || 1) * Math.log2(probability || 1); // Garante que probability nunca seja 0
         }, 0);
     }
+    
 
     /*
     Formato de entrada de previousSymptoms:
@@ -178,12 +181,15 @@ export default class Id3_analyzer {
 
     // calculate H(S|v) = sum of p(d|v) * H(D|V) for all diseases by symptom
     static calculateConditionalEntropySum(trainingData, symptom, diseaseToOccurrencesAmount) {
-        const relevantCases = trainingData.filter(disease =>
-            disease.symptoms.some(symptomData => symptomData.symptom === symptom)
+        const relevantCases = trainingData.filter(diseaseData =>
+            diseaseData.symptoms.includes(symptom)
         );
 
+        const totalRelevantCases = relevantCases.length;
+        if (totalRelevantCases === 0) return 0;
+
         return [...diseaseToOccurrencesAmount.values()].reduce((sum, count) => {
-            const p_v = count / relevantCases.length;
+            const p_v = count / totalRelevantCases;
             sum += p_v * this.calculateConditionalEntropy(trainingData, [...diseaseToOccurrencesAmount.keys()], symptom);
             return sum;
         }, 0);
@@ -196,15 +202,14 @@ export default class Id3_analyzer {
 
     // calculate p(d|v) * log2(p(d|v))
     static calculateEntropyItem(trainingData, symptom, disease) {
-        const totalCasesForDisease = trainingData.filter(disease =>
-            disease.disease === disease &&
-            disease.symptoms.some(symptomData => symptomData.symptom === symptom)
+        const totalCasesForDisease = trainingData.filter(diseaseData =>
+            diseaseData.disease === disease &&
+            diseaseData.symptoms.includes(symptom)
         ).length;
 
-        const symptomCount = trainingData.filter(diseaseData =>
-            diseaseData.disease === disease &&
-            diseaseData.symptoms.some(symptomData => symptomData.symptom === symptom)
-        ).length;
+        if (totalCasesForDisease === 0) return 0;
+
+        const symptomCount = totalCasesForDisease;
 
         // Probabilidade condicional p(d|v)
         const p_d_given_v = symptomCount / totalCasesForDisease;
