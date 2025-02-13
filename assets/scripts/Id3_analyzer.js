@@ -1,220 +1,258 @@
 export default class Id3_analyzer {
-    /*
-    Formato de entrada de trainingData:
-    [
-        {
-            disease: "Doença A",
-            symptoms: ["Febre_Forte", "Tosse_Médio"]
-        },
-        {
-            disease: "Doença B",
-            symptoms: ["Febre_Médio", "Tosse_Forte"]
-        }
-    ]
-    Formato de entrada de answers:
-    [
-        "Sintoma 1_Médio",
-        "Sintoma 2_Forte"
-    ]
-    */
-    static getProbableResult(trainingData, answers) {
-        const symptoms = this.getSymptoms(trainingData);
+    /**
+      * @typedef {Object} TrainingDataItem
+      * @property {string} category - Nome da categoria.
+      * @property {string[]} attributes - Lista de atributos para a categoria.
+      */
 
-        const decisionTree = this.buildDecisionTree(trainingData, symptoms, []);
+    /**
+     * @typedef {Object} DecisionTreeNode
+     * @property {string|null} attributeOfQuestion - Atributo da questão ou null se for folha.
+     * @property {string|null} category - Categoria de uma folha.
+     * @property {DecisionTreeNode|null} yes - Sub-árvore para a resposta "sim" ou null se folha.
+     * @property {DecisionTreeNode|null} no - Sub-árvore para a resposta "não" ou null se folha.
+     */
+
+    /**
+     * @param {TrainingDataItem[]} trainingData
+     * @param {string[]} answers
+     * @returns {string}
+     */
+    static predictWithTrainingData(trainingData, answers) {
+        const attributes = this.getAttributes(trainingData);
+
+        const decisionTree = this.buildDecisionTree(trainingData, attributes, []);
 
         return this.predict(decisionTree, answers);
     }
 
-    // get all symptoms from the training data
-    static getSymptoms(trainingData) {
-        return [...new Set(trainingData.flatMap(disease => disease.symptoms))];
-    }
-
-    // prever o resultado mais provável
+    /**
+     * @param {DecisionTreeNode} decisionTree
+     * @param {string[]} answers
+     * @returns {string}
+     */
     static predict(decisionTree, answers) {
+        const isLeaf = (currentNode) => Boolean(currentNode.category);
+
         let currentNode = decisionTree;
 
-        // Percorre a árvore enquanto existirem perguntas para fazer
-        while (currentNode.symptomOfQuestion) {
-            // Verifica se a resposta para o sintoma está presente nos sintomas da resposta
-            const answer = answers.includes(currentNode.symptomOfQuestion);
+        while (!isLeaf(currentNode)) {
+            const hasAttribute = answers.includes(currentNode.attributeOfQuestion);
 
-            // Decide qual ramo seguir (yes ou no) com base na resposta
-            if (answer) {
+            if (hasAttribute) {
                 currentNode = currentNode.yes;
             } else {
                 currentNode = currentNode.no;
             }
         }
 
-        // Quando chegar a uma folha, retorna a doença
-        return currentNode.disease;
+        return currentNode.category;
     }
 
-    // Método para construir a árvore de decisão
-    static buildDecisionTree(trainingData, symptoms, previousAnswers) {
-        // Buscar folha da árvore caso necessário
-        const leafNode = this.getLeafNode(trainingData, symptoms);
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @returns {string[]}
+     */
+    static getAttributes(trainingDataSubset) {
+        return [...new Set(trainingDataSubset.flatMap(category => category.attributes))];
+    }
+
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string[]} attributes
+     * @returns {DecisionTreeNode}
+     */
+    static buildDecisionTree(trainingDataSubset, attributes) {
+        const leafNode = this.getLeafNode(trainingDataSubset, attributes);
 
         if (leafNode) {
             return leafNode;
         }
 
-        // Obter o melhor sintoma com o maior ganho de informação
-        const bestSymptom = this.getBestInformationGain(previousAnswers, trainingData, symptoms);
+        const bestAttribute = this.getBestInformationGainAttribute(trainingDataSubset, attributes);
+        const [yesData, noData] = this.splitDataByAttribute(trainingDataSubset, bestAttribute);
 
-        // Dividir os dados em dois conjuntos com base no sintoma escolhido
-        const [yesData, noData] = this.splitDataBySymptom(trainingData, bestSymptom);
+        // Define os nós filhos considerando o caso de subconjuntos vazios
+        const nodeYes = yesData.length > 0
+            ? this.buildDecisionTree(yesData, attributes.filter(a => a !== bestAttribute))
+            : this.createLeafNode(this.getMostFrequentCategory(trainingDataSubset));
 
-        // Criar o nó de decisão com base no melhor sintoma
-        const node = {
-            symptomOfQuestion: bestSymptom,
-            disease: null,  // doença será nula até a folha
-            yes: this.buildDecisionTree(yesData, symptoms.filter(s => s !== bestSymptom), [...previousAnswers, { symptom: bestSymptom, answer: true }]),
-            no: this.buildDecisionTree(noData, symptoms.filter(s => s !== bestSymptom), [...previousAnswers, { symptom: bestSymptom, answer: false }])
+        const nodeNo = noData.length > 0
+            ? this.buildDecisionTree(noData, attributes.filter(a => a !== bestAttribute))
+            : this.createLeafNode(this.getMostFrequentCategory(trainingDataSubset));
+
+        return {
+            attributeOfQuestion: bestAttribute,
+            category: null,
+            yes: nodeYes,
+            no: nodeNo
         };
-
-        return node;
     }
 
-    //buscar folha da árvore caso necessário
-    static getLeafNode(trainingData, symptoms) {
-        const diseaseToOccurrencesAmount = this.getDiseaseToOccurrencesAmount(trainingData);
+    /**
+     * Buscar folha da árvore caso necessário
+     * @param {string} category
+     * @returns {DecisionTreeNode}
+     */
+    static createLeafNode(category) {
+        return {attributeOfQuestion: null, category, yes: null, no: null};
+    }
 
-        // Se todas as instâncias têm a mesma doença, retornamos essa doença
-        if (diseaseToOccurrencesAmount.size === 1) {
-            const disease = [...diseaseToOccurrencesAmount.keys()][0];
-            return { symptomOfQuestion: null, disease, yes: null, no: null }; // folha com a doença
+    /**
+     * Buscar folha da árvore caso necessário
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string[]} attributes
+     * @returns {DecisionTreeNode|null}
+     */
+    static getLeafNode(trainingDataSubset, attributes) {
+        if (trainingDataSubset.length == 0) {
+            return null;
         }
 
-        // Se não restam sintomas para perguntar, escolhemos a doença mais frequente como resposta
-        if (symptoms.length === 0) {
-            const mostFrequentDisease = this.getMostFrequentDisease(trainingData);
-            return { symptomOfQuestion: null, disease: mostFrequentDisease, yes: null, no: null }; // folha com a doença mais frequente
+        const isAllOfSameCategory = trainingDataSubset.every(item => item.category === trainingDataSubset[0].category);
+
+        if (isAllOfSameCategory) {
+            return this.createLeafNode(trainingDataSubset[0].category);
+        }
+        else if (attributes.length == 0) {
+            const category = this.getMostFrequentCategory(trainingDataSubset);
+            return this.createLeafNode(category);
         }
 
         return null;
     }
 
-    // Dividir os dados de treinamento com base no sintoma
-    static splitDataBySymptom(trainingData, symptom) {
-        const yesData = trainingData.filter(diseaseData => diseaseData.symptoms.includes(symptom));
-        const noData = trainingData.filter(diseaseData => !diseaseData.symptoms.includes(symptom));
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string} attribute
+     * @returns {[TrainingDataItem[], TrainingDataItem[]]}
+     */
+    static splitDataByAttribute(trainingDataSubset, attribute) {
+        const yesData = trainingDataSubset.filter(categoryData => categoryData.attributes.includes(attribute));
+        const noData = trainingDataSubset.filter(categoryData => !categoryData.attributes.includes(attribute));
         return [yesData, noData];
     }
 
-    // Obter a doença mais frequente nos dados
-    static getMostFrequentDisease(trainingData) {
-        const diseaseToOccurrencesAmount = this.getDiseaseToOccurrencesAmount(trainingData);
-        return [...diseaseToOccurrencesAmount.entries()].reduce((max, [disease, count]) =>
-            count > max[1] ? [disease, count] : max, ["", 0]
+    /**
+     * @param {Map<string, number>} categoryToOccurrencesAmount
+     * @returns {string}
+     */
+    static getMostFrequentCategory(trainingDataSubset) {
+        return [...this.getCategoryToOccurrencesAmount(trainingDataSubset).entries()].reduce((max, [category, count]) =>
+            count > max[1] ? [category, count] : max, ["", 0]
         )[0];
     }
 
-    // map disease -> count of occurrences
-    static getDiseaseToOccurrencesAmount(trainingData) {
-        return trainingData.reduce((diseaseToOccurrencesAmount, { disease }) =>
-            diseaseToOccurrencesAmount.set(disease, (diseaseToOccurrencesAmount.get(disease) || 0) + 1), new Map());
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @returns {Map<string, number>}
+     */
+    static getCategoryToOccurrencesAmount(trainingDataSubset) {
+        return trainingDataSubset.reduce((categoryToOccurrencesAmount, { category }) =>
+            categoryToOccurrencesAmount.set(category, (categoryToOccurrencesAmount.get(category) || 0) + 1), new Map());
     }
 
-    // initial entropy of the disease set
-    static calculateInitialEntropy(diseaseCounts, totalCases) {
-        if (totalCases === 0) return 0;
-    
-        return [...diseaseCounts.values()].reduce((totalEntropy, count) => {
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string[]} attributes
+     * @returns {string}
+     */
+    static getBestInformationGainAttribute(trainingDataSubset, attributes) {
+        const attributeToInformationGain = this.getAttributeToInformationGain(trainingDataSubset, attributes);
+
+        return [...attributeToInformationGain.entries()].reduce(
+            (bestGainEntry, [attribute, gain]) => gain > bestGainEntry[1] ? [attribute, gain] : bestGainEntry,
+            ["", -1]
+        )[0];
+    }
+
+    /**
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string[]} attributes
+     * @returns {Map<string, number>}
+     */
+    static getAttributeToInformationGain(trainingDataSubset, attributes) {
+        return attributes.reduce((attributeToInformationGain, attribute) => {
+            const gain = this.calculateInformationGain(trainingDataSubset, attribute);
+            attributeToInformationGain.set(attribute, gain);
+            return attributeToInformationGain;
+        }, new Map());
+    }
+
+    /**
+     * Calcular o ganho de informação (G(S) = H(D) − H(S|D)) por atributo
+     * @param {number} initialEntropy
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string} attribute
+     * @returns {number}
+     */
+    static calculateInformationGain(trainingDataSubset, attribute) {
+        const categoryToOccurrencesAmount = this.getCategoryToOccurrencesAmount(trainingDataSubset);
+
+        const initialEntropy = this.calculateInitialEntropy(categoryToOccurrencesAmount, trainingDataSubset.length)
+        const conditionalEntropySum = this.calculateConditionalEntropySum(trainingDataSubset, categoryToOccurrencesAmount, attribute);
+        return initialEntropy - conditionalEntropySum;
+    }
+
+    /**
+     * @param {Map<string, number>} categoryToOccurrencesAmount
+     * @param {number} totalCases
+     * @returns {number}
+     */
+    static calculateInitialEntropy(categoryToOccurrencesAmount, totalCases) {
+        if (totalCases == 0) return 0;
+
+        return [...categoryToOccurrencesAmount.values()].reduce((totalEntropy, count) => {
             const probability = count / totalCases;
             return totalEntropy - (probability || 1) * Math.log2(probability || 1); // Garante que probability nunca seja 0
         }, 0);
     }
-    
 
-    /*
-    Formato de entrada de previousSymptoms:
-    [
-        {
-            symptom: "Febre_Forte",
-            answer: true,
-        },
-        {
-            symptom: "Tosse_Médio",
-            answer: false,
-        }
-    ]*/
-    // get the symptom with best information gain
-    static getBestInformationGain(previousSymptoms, trainingData, symptoms) {
-        // Filtra os dados de treinamento com base nos sintomas e respostas
-        const filteredData = trainingData.filter(diseaseData =>
-            previousSymptoms.every(({ symptom, answer }) => {
-                if (answer) {
-                    return diseaseData.symptoms.includes(symptom);
-                } else {
-                    return !diseaseData.symptoms.includes(symptom);
-                }
-            })
-        );
-
-        const diseaseToOccurrencesAmount = this.getDiseaseToOccurrencesAmount(filteredData);
-
-        const symptomToInformationGain = this.getSymptomToInformationGain(filteredData, symptoms, diseaseToOccurrencesAmount);
-
-        return [...symptomToInformationGain.entries()].reduce(
-            (bestGainEntry, [symptom, gain]) => gain > bestGainEntry[1] ? [symptom, gain] : bestGainEntry,
-            ["", 0]
-        )[0];
-    }
-
-    // map symptom to informationGain
-    static getSymptomToInformationGain(trainingData, symptoms, diseaseToOccurrencesAmount) {
-        const initialEntropy = this.calculateInitialEntropy(diseaseToOccurrencesAmount, trainingData.length)
-        return symptoms.reduce((symptomToInformationGain, symptom) => {
-            const gain = this.calculateInformationGain(initialEntropy, trainingData, symptom, diseaseToOccurrencesAmount);
-            symptomToInformationGain.set(symptom, gain);
-            return symptomToInformationGain;
-        }, new Map());
-    }
-
-    // calculate G(S) = H(D) − H(S|D) by symptom
-    static calculateInformationGain(initialEntropy, trainingData, symptom, diseaseToOccurrencesAmount) {
-        const conditionalEntropySum = this.calculateConditionalEntropySum(trainingData, symptom, diseaseToOccurrencesAmount);
-        return initialEntropy - conditionalEntropySum;
-    }
-
-    // calculate H(S|v) = sum of p(d|v) * H(D|V) for all diseases by symptom
-    static calculateConditionalEntropySum(trainingData, symptom, diseaseToOccurrencesAmount) {
-        const relevantCases = trainingData.filter(diseaseData =>
-            diseaseData.symptoms.includes(symptom)
+    /**
+     * Calcular a soma da entropia condicional (H(S|v))
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {Map<string, number>} categoryToOccurrencesAmount
+     * @param {string} attribute
+     * @returns {number}
+     */
+    static calculateConditionalEntropySum(trainingDataSubset, categoryToOccurrencesAmount, attribute) {
+        const relevantCases = trainingDataSubset.filter(dataItem =>
+            dataItem.attributes.includes(attribute)
         );
 
         const totalRelevantCases = relevantCases.length;
-        if (totalRelevantCases === 0) return 0;
+        if (totalRelevantCases == 0) return 0;
 
-        return [...diseaseToOccurrencesAmount.values()].reduce((sum, count) => {
+        return [...categoryToOccurrencesAmount.values()].reduce((sum, count) => {
             const p_v = count / totalRelevantCases;
-            sum += p_v * this.calculateConditionalEntropy(trainingData, [...diseaseToOccurrencesAmount.keys()], symptom);
+            sum += p_v * this.calculateConditionalEntropy(trainingDataSubset, [...categoryToOccurrencesAmount.keys()], attribute);
             return sum;
         }, 0);
     }
 
-    // calculate H(D|v) = - sum of p(d|v) * log2(p(d|v)) for all diseases by symptom
-    static calculateConditionalEntropy(trainingData, diseases, symptom) {
-        return diseases.reduce((sum, disease) => sum - this.calculateEntropyItem(trainingData, symptom, disease), 0);
+    /**
+     * Calcular a entropia condicional H(D|v) para todas as categorias por atributo.
+     * H(D|v) = p(d|v) * log2(p(d|v))
+     * @param {TrainingDataItem[]} trainingDataSubset
+     * @param {string[]} categories
+     * @param {string} attribute
+     * @returns {number}
+     */
+    static calculateConditionalEntropy(trainingDataSubset, categories, attribute) {
+        if (trainingDataSubset.length == 0) {
+            return 0;
+        }
+
+        return categories.reduce((sum, category) => {
+            const numOfFilteredItems = trainingDataSubset.filter(item => item.category === category && item.attributes.includes(attribute)).length;
+
+            if (numOfFilteredItems == 0) {
+                return sum;
+            }
+
+            const p_d_given_v = numOfFilteredItems / trainingDataSubset.length;
+            return sum - (p_d_given_v * Math.log2(p_d_given_v));
+        }, 0);
     }
 
-    // calculate p(d|v) * log2(p(d|v))
-    static calculateEntropyItem(trainingData, symptom, disease) {
-        const totalCasesForDisease = trainingData.filter(diseaseData =>
-            diseaseData.disease === disease &&
-            diseaseData.symptoms.includes(symptom)
-        ).length;
-
-        if (totalCasesForDisease === 0) return 0;
-
-        const symptomCount = totalCasesForDisease;
-
-        // Probabilidade condicional p(d|v)
-        const p_d_given_v = symptomCount / totalCasesForDisease;
-
-        // Retorna o valor calculado, porém 0 para não quebrar o logaritmo
-        return p_d_given_v === 0 ? 0 : p_d_given_v * Math.log2(p_d_given_v);
-    }
 }

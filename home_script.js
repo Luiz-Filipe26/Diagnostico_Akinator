@@ -43,8 +43,8 @@ function nextSymptom() {
 
 function structureTableDataForAnalysis(tableData) {
     return tableData.rows.map(row => ({
-        disease: row.disease,
-        symptoms: tableData.columns
+        category: row.disease,
+        attributes: tableData.columns
             .map((col, index) => row.values[index] !== "Irrelevante" ? `${col}_${row.values[index]}` : null)
             .filter(Boolean)
     }));
@@ -60,7 +60,7 @@ function finishAnalysis() {
     document.getElementById("evaluationCard").classList.remove("active");
     const trainingData = structureTableDataForAnalysis(tableData);
     const answersForAnalysis = strucutureAnswersForAnalysis(answers);
-    const probableDisease = Id3_analyzer.getProbableResult(trainingData, answersForAnalysis);
+    const probableDisease = Id3_analyzer.predictWithTrainingData(trainingData, answersForAnalysis);
     showMessage(`A doença mais provável é: ${probableDisease}`);
 }
 
