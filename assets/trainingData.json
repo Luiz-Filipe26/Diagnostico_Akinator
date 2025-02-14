@@ -1,0 +1,64 @@
+{
+    "columns": [
+        "1. Fadiga Extrema",
+        "2. Músculos Relaxados / Movimentos Lentos",
+        "3. Dor Muscular Difusa / Cãibras Musculares Frequentes",
+        "4. Tremores Musculares",
+        "5. Sensação de Fraqueza nas Extremidades",
+        "6. Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora",
+        "7. Sede Excessiva",
+        "8. Calafrios",
+        "9. Insônia / Problemas de concentração e memória",
+        "10. Falta de Apetite",
+        "11. Convulsões",
+        "12. Falta de Equilíbrio",
+        "13. Dificuldade Respiratória",
+        "14. Visão Turva",
+        "15. Dor de Cabeça Intensa",
+        "16. Aumento da Pressão Arterial",
+        "17. Paralisia Progressiva",
+        "18. Náuseas e Vômitos",
+        "19. Desorientação Mental / Sintomas de Ansiedade",
+        "20. Febre Alta",
+        "21. Dor óssea crônica / Osteoporose precoce",
+        "22. Diminuição da Densidade Óssea",
+        "23. Tensão Muscular",
+        "24. Palpitações Cardíacas"
+    ],
+    "rows": [
+        {
+            "disease": "Toximiosite",
+            "values": [
+                "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Irrelevante", "Forte", 
+                "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", 
+                "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante"
+            ]
+        },
+        {
+            "disease": "Neurotoxemia Aquática",
+            "values": [
+                "Irrelevante", "Irrelevante", "Irrelevante", "Forte", "Irrelevante", "Forte", "Irrelevante", "Irrelevante", 
+                "Irrelevante", "Irrelevante", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", "Forte", 
+                "Forte", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante"
+            ]
+        },
+        {
+            "disease": "Cádmiocondrose",
+            "values": [
+                "Forte", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", 
+                "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Forte", "Irrelevante", "Forte", 
+                "Irrelevante", "Irrelevante", "Forte", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", 
+                "Irrelevante", "Forte"
+            ]
+        },
+        {
+            "disease": "Polusis Aquática",
+            "values": [
+                "Moderada", "Irrelevante", "Irrelevante", "Irrelevante", "Irrelevante", "Moderada", "Irrelevante", 
+                "Irrelevante", "Moderada", "Irrelevante", "Irrelevante", "Irrelevante", "Moderada", "Irrelevante", 
+                "Moderada", "Irrelevante", "Irrelevante", "Moderada", "Irrelevante", "Irrelevante", "Irrelevante", 
+                "Irrelevante", "Moderada", "Irrelevante"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,63 @@
+**1 - Toximiosite**  
+**Descrição:**  
+A Toximiosite é uma condição causada pela picada do pernilongo *Mollis Columbius*, uma espécie fictícia com uma estratégia predatória única. Ao picar, o pernilongo injeta um líquido composto por proteínas relaxantes musculares, que causam uma fraqueza muscular extrema. Esta substância faz com que os músculos se relaxem excessivamente, resultando em cansaço profundo e dificuldade para movimentação. Durante a alimentação, o pernilongo também libera um feromônio que atrai outros mosquitos da mesma espécie para a vítima, agravando o quadro à medida que mais picadas ocorrem.
+
+**Sintomas:**
+- Fadiga Extrema: Sensação de cansaço profundo e dificuldade para realizar movimentos simples.
+- Músculos Relaxados / Movimentos Lentos: Sensação de músculos "flácidos", sem força, com dificuldade para realizar movimentos rápidos.
+- Dor Muscular Difusa / Cãibras Musculares Frequentes: Dores constantes nos músculos, especialmente nas pernas e costas, com cãibras ocasionais.
+- Tremores Musculares: Pequenos tremores nas mãos e pernas, provocados pelo feromônio do pernilongo.
+- Sensação de Fraqueza nas Extremidades: Perda de força nas extremidades, dificultando tarefas simples.
+- Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora: Sensação de tontura leve e dificuldade para coordenar movimentos.
+- Sede Excessiva: Sensação constante de sede, provavelmente devido à desidratação.
+- Calafrios: Episódios de calafrios, relacionados à alteração no sistema nervoso.
+- Insônia / Problemas de Concentração e Memória: Dificuldade para dormir devido à sensação constante de fadiga e dor.
+- Falta de Apetite: Perda de apetite devido ao mal-estar geral causado pela doença.
+
+---
+
+**2 - Neurotoxemia Aquática**  
+**Descrição:**  
+A Neurotoxemia Aquática é causada pelo parasita *Neurotoxoplasma aquatilis*, transmitido por águas contaminadas. O parasita se aloja no sistema nervoso periférico e libera uma toxina que compromete a comunicação entre o cérebro e o corpo. Inicialmente assintomática, a infecção se agrava com convulsões, perda de coordenação motora e dificuldades respiratórias. Se não tratada, pode levar à paralisia permanente ou insuficiência respiratória fatal.
+
+**Sintomas:**
+- Convulsões: Contrações musculares involuntárias, seguidas de perda de consciência.
+- Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora: Dificuldade para controlar movimentos voluntários.
+- Falta de Equilíbrio: Sensação de desequilíbrio, como se estivesse prestes a cair.
+- Dificuldade Respiratória: Sensação de sufocamento e dificuldade para respirar.
+- Visão Turva: Visão embaçada ou dupla, dificultando a percepção visual.
+- Dor de Cabeça Intensa: Cefaleias persistentes, associadas à toxina no cérebro.
+- Aumento da Pressão Arterial: Picos de pressão arterial devido à interação da toxina com o sistema nervoso autônomo.
+- Paralisia Progressiva: Paralisia que começa nas extremidades e se espalha para o tronco.
+- Tremores Musculares: Tremores involuntários nos membros.
+- Náuseas e Vômitos: Causados pela toxina no sistema nervoso.
+- Desorientação Mental / Sintomas de Ansiedade: Confusão mental, perda de memória e dificuldade para raciocinar claramente.
+- Febre Alta: Reação do corpo à infecção, com febre e calafrios.
+
+---
+
+**3 - Cádmiocondrose**  
+**Descrição:**  
+A Cádmiocondrose é uma doença resultante da falta crônica de cálcio e ingestão de peixes contaminados com cádmio, um metal pesado. O corpo substitui o cálcio por cádmio nos ossos, o que compromete sua estrutura e integridade. O cádmio enfraquece os ossos, tornando-os mais suscetíveis a fraturas e resultando em dores e limitações de mobilidade.
+
+**Sintomas:**
+- Dor Óssea Crônica / Osteoporose Precoce: Dor constante, especialmente em costas, quadris e joelhos.
+- Diminuição da Densidade Óssea: Ossos com densidade muito inferior à normal.
+- Dor Muscular Difusa / Cãibras Musculares Frequentes: Dores constantes nos músculos, especialmente nas pernas e costas.
+- Fadiga Extrema: Cansaço constante devido à fraqueza óssea e muscular.
+- Tensão Muscular: Fadiga e dor muscular devido ao esforço excessivo.
+
+---
+
+**4 - Polusis**  
+**Descrição:**  
+Polusis é uma doença somática resultante da exposição a ambientes urbanos poluídos, com baixos níveis de oxigênio e alta concentração de partículas tóxicas. A doença se manifesta em pessoas altamente sensíveis ao estresse ambiental, especialmente em grandes cidades ou regiões industriais. A poluição e o estresse geram um ciclo vicioso, onde os sintomas físicos aumentam a ansiedade, piorando a percepção de falta de ar e cansaço.
+
+**Sintomas:**
+- Fadiga Extrema: Sensação constante de cansaço, mesmo após descanso.
+- Dificuldade Respiratória: Sensação de falta de ar, especialmente em locais fechados ou pouco ventilados.
+- Dor de Cabeça Intensa: Cefaleia persistente devido à baixa oxigenação e estresse.
+- Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora: Dificuldade para coordenar movimentos devido ao cansaço e estresse.
+- Insônia / Problemas de Concentração e Memória: Dificuldade em manter atenção e lembrar informações devido ao estresse.
+- Desorientação Mental / Sintomas de Ansiedade: Sensação de sufocamento ou pânico em ambientes poluídos.
+- Palpitações Cardíacas: Aumento da frequência cardíaca devido ao estresse e dificuldades respiratórias.

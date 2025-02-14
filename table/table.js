@@ -4,6 +4,7 @@ window.generateJSON = generateJSON;
 window.removeColumn = removeColumn;
 window.removeRow = removeRow;
 window.downloadJSON = downloadJSON;
+window.uploadJSON = uploadJSON;
 
 const resultToUser = document.getElementById("result");
 
