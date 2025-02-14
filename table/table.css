@@ -15,6 +15,7 @@ body {
     background-color: #0066CC;
     padding: 10px;
     text-align: center;
+    width: auto;
 }
 
 .navbar ul {
@@ -41,22 +42,26 @@ body {
     background-color: #555;
 }
 
-.container {
+.table-wrapper {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-left: 20px;
     align-items: flex-start;
     gap: 10px;
     margin-top: 20px;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
-.table-container {
+.table-content {
     display: inline-block;
     position: relative;
 }
 
 table {
-    width: auto;
+    width: 100%; /* Garantir que a tabela ocupe 100% do espaço do wrapper */
     border-collapse: collapse;
+    white-space: nowrap; /* Impede a quebra de linha nas células da tabela */
 }
 
 th,
@@ -83,7 +88,7 @@ select {
 }
 
 /* Botões */
-.btn {
+.icon-btn {
     background: url('/assets/images/add_button.png') no-repeat center;
     background-size: contain;
     width: 24px;
@@ -93,7 +98,7 @@ select {
     display: inline-block;
 }
 
-.remove-btn {
+.btn-remove {
     background: url('/assets/images/remove_button.png') no-repeat center;
     background-size: contain;
     width: 16px;
@@ -104,15 +109,18 @@ select {
     vertical-align: middle;
 }
 
-.add-row-btn {
+.btn-add-row {
     margin-top: 10px;
     display: block;
-    position: absolute;
-    left: 0;
-    bottom: -35px;
+    position: relative;
+    margin-top: 10px;
 }
 
-.button-container {
+.btn-add-column {
+    flex-shrink: 0;
+}
+
+.action-buttons {
     margin-top: 50px;
     display: flex;
     flex-direction: row;
@@ -120,7 +128,7 @@ select {
     gap: 15px;
 }
 
-.button-container button {
+.action-buttons button {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -131,15 +139,15 @@ select {
     transition: background-color 0.3s ease;
 }
 
-.button-container button:hover {
+.action-buttons button:hover {
     background-color: #0056b3;
 }
 
-.button-container input[type="file"] {
+.action-buttons input[type="file"] {
     display: none;
 }
 
-.button-container label {
+.action-buttons label {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -150,6 +158,6 @@ select {
     transition: background-color 0.3s ease;
 }
 
-.button-container label:hover {
+.action-buttons label:hover {
     background-color: #0056b3;
 }

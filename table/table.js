@@ -34,7 +34,7 @@ function loadTableFromJSON() {
         const newColumn = document.createElement("th");
         newColumn.innerHTML = `
                 <input type="text" value="${column}">
-                <button class="remove-btn" onclick="removeColumn(event)"></button>
+                <button class="btn-remove" onclick="removeColumn(event)"></button>
             `;
         headerRow.appendChild(newColumn);
     });
@@ -47,7 +47,7 @@ function loadTableFromJSON() {
         const firstCell = newRow.insertCell();
         firstCell.innerHTML = `
                 <input type="text" value="${rowData.disease}">
-                <button class="remove-btn" onclick="removeRow(this)"></button>
+                <button class="btn-remove" onclick="removeRow(this)"></button>
             `;
 
         // Células de sintomas
@@ -70,7 +70,7 @@ function addColumn() {
     const newColumn = document.createElement("th");
     newColumn.innerHTML = `
         <input type="text" value="Sintoma ${colIndex}">
-        <button class="remove-btn" onclick="removeColumn(event)"></button>
+        <button class="btn-remove" onclick="removeColumn(event)"></button>
     `;
     headerRow.appendChild(newColumn);
 
@@ -89,7 +89,7 @@ function addRow() {
     const firstCell = newRow.insertCell();
     firstCell.innerHTML = `
         <input type="text" value="Doença ${table.rows.length}">
-        <button class="remove-btn" onclick="removeRow(this)"></button>
+        <button class="btn-remove" onclick="removeRow(this)"></button>
     `;
 
     for (let i = 1; i < columns; i++) {

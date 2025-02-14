@@ -19,15 +19,15 @@
 
     <h1>Tabela de Treinamento</h1>
 
-    <div class="container">
-        <div class="table-container">
+    <div class="table-wrapper">
+        <div class="table-content">
             <table id="table">
                 <thead>
                     <tr>
                         <th>Doença/Sintoma</th>
                         <th>
                             <input type="text" value="Sintoma 1">
-                            <button class="remove-btn" onclick="removeColumn(event)"></button>
+                            <button class="btn-remove" onclick="removeColumn(event)"></button>
                         </th>
                     </tr>
                 </thead>
@@ -35,7 +35,7 @@
                     <tr>
                         <td>
                             <input type="text" value="Doença 1">
-                            <button class="remove-btn" onclick="removeRow(event)"></button>
+                            <button class="btn-remove" onclick="removeRow(event)"></button>
                         </td>
                         <td>
                             <select>
@@ -47,13 +47,13 @@
                     </tr>
                 </tbody>
             </table>
-            <button class="btn add-row-btn" onclick="addRow()"></button>
+            <button class="icon-btn btn-add-row" onclick="addRow()"></button>
         </div>
-        <button class="btn add-column-btn" onclick="addColumn()"></button>
+        <button class="icon-btn btn-add-column" onclick="addColumn()"></button>
     </div>
 
     <!-- Container para os botões fora da tabela -->
-    <div class="button-container">
+    <div class="action-buttons">
         <button onclick="generateJSON()">Salvar tabela na memória</button>
         <label for="fileUpload">Fazer upload de tabela JSON</label>
         <input type="file" name="fileUpload" id="fileUpload" onchange="uploadJSON(event)" />
