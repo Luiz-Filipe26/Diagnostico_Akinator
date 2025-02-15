@@ -119,7 +119,7 @@ function rebuildOptionsList() {
     const selectedValue = diseaseSelect.value;
     removeOptions(diseaseSelect);
 
-    diseaseNames.forEach(diseaseName => {
+    [...new Set(diseaseNames)].forEach(diseaseName => {
         const option = document.createElement('option');
         option.value = diseaseName;
         option.textContent = diseaseName;
