@@ -14,6 +14,7 @@ if (!tableData) {
 } else {
     symptoms = tableData.columns;
     document.getElementById("symptom").textContent = symptoms[currentIndex];
+    updateQuestionProgress();
 }
 
 function startEvaluation() {
@@ -35,10 +36,18 @@ function nextSymptom() {
     currentIndex++;
     if (currentIndex < symptoms.length) {
         document.getElementById("symptom").textContent = symptoms[currentIndex];
+        updateQuestionProgress(); 
         showMessage("");
     } else {
         finishAnalysis();
     }
+}
+
+function updateQuestionProgress() {
+    const totalQuestions = symptoms.length;
+    const currentQuestion = currentIndex + 1; // Para mostrar de forma amigável (1-indexed)
+    const progressText = `Pergunta: ${currentQuestion}/${totalQuestions}`;
+    document.getElementById("questionProgress").textContent = progressText;
 }
 
 function structureTableDataForAnalysis(tableData) {
@@ -61,8 +70,22 @@ function finishAnalysis() {
     const trainingData = structureTableDataForAnalysis(tableData);
     const answersForAnalysis = strucutureAnswersForAnalysis(answers);
     const probableDisease = Id3_analyzer.predictWithTrainingData(trainingData, answersForAnalysis);
-    showMessage(`A doença mais provável é: ${probableDisease}`);
+
+    // Obter a descrição da doença
+    const descriptionData = JSON.parse(localStorage.getItem("diseaseDescriptions")) || { diseases: [] };
+    const diseaseEntry = descriptionData.diseases.find(d => d.disease === probableDisease);
+    const description = diseaseEntry ? diseaseEntry.description : "Não há descrição para a doença.";
+
+    // Substituir as quebras de linha por <br> para formatar corretamente no HTML
+    const formattedDescription = description.replace(/\n/g, "<br>");
+
+    // Mostrar a mensagem com o nome da doença e a descrição
+    showMessage(`
+        <strong>A doença mais provável é:</strong> ${probableDisease}<br>
+        <strong>Descrição da doença:</strong><br> ${formattedDescription}
+    `);
 }
+
 
 function showMessage(text) {
     const msgDiv = document.getElementById("mensagem");

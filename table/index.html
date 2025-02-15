@@ -18,6 +18,7 @@
 
 
     <h1>Tabela de Treinamento</h1>
+    <p>Use esta tabela para preencher que sintomas teve cada pessoa com uma doença diagnosticada.</p>
 
     <div class="table-wrapper">
         <div class="table-content">
@@ -55,12 +56,32 @@
     <!-- Container para os botões fora da tabela -->
     <div class="action-buttons">
         <button onclick="generateJSON()">Salvar tabela na memória</button>
-        <label for="fileUpload">Fazer upload de tabela JSON</label>
-        <input type="file" name="fileUpload" id="fileUpload" onchange="uploadJSON(event)" />
+        <label for="fileUpload">Subir de tabela JSON</label>
+        <input type="file" id="fileUpload" onchange="uploadJSON(event)" />
         <button onclick="downloadJSON()">Baixar tabela JSON</button>
     </div>
 
     <pre id="result"></pre>
+
+    <div class="descriptions-area">
+
+        <h2>Descrição</h2>
+        <p>Digite aqui a descrição das doenças que estão na tabela</p>
+        <button onclick="downloadDescriptionJSON()">Baixar JSON de descrições</button>
+        <label for="descriptionsFileUpload">Subir JSON de descrições</label>
+        <input type="file" id="descriptionsFileUpload" onchange="uploadDescriptionJSON(event)" />
+
+        <div class="descriptions-container">
+
+            <select id="diseaseSelect">
+                <option value="Doença 1">Doença 1</option>
+            </select>
+
+            <textarea id="inputDescription" placeholder="Digite a descrição da doença..."></textarea>
+            <button onclick="confirmDescription()">Confirmar</button>
+
+        </div>
+    </descriptions-area>
 
     <script type="module" src="./table.js"></script>
 

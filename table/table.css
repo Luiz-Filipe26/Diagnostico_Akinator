@@ -59,9 +59,9 @@ body {
 }
 
 table {
-    width: 100%; /* Garantir que a tabela ocupe 100% do espaço do wrapper */
+    width: 100%;
     border-collapse: collapse;
-    white-space: nowrap; /* Impede a quebra de linha nas células da tabela */
+    white-space: nowrap;
 }
 
 th,
@@ -83,7 +83,7 @@ td button {
     vertical-align: middle;
 }
 
-select {
+.table select {
     width: 100%;
 }
 
@@ -121,14 +121,14 @@ select {
 }
 
 .action-buttons {
-    margin-top: 50px;
+    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 15px;
 }
 
-.action-buttons button {
+.action-buttons button, .descriptions-area button {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -139,15 +139,15 @@ select {
     transition: background-color 0.3s ease;
 }
 
-.action-buttons button:hover {
+.action-buttons button:hover, .descriptions-area button:hover {
     background-color: #0056b3;
 }
 
-.action-buttons input[type="file"] {
+.action-buttons input[type="file"], .descriptions-area input[type="file"] {
     display: none;
 }
 
-.action-buttons label {
+.action-buttons label, .descriptions-area label {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -158,6 +158,30 @@ select {
     transition: background-color 0.3s ease;
 }
 
-.action-buttons label:hover {
+.action-buttons label:hover, .descriptions-area label:hover {
     background-color: #0056b3;
+}
+
+.descriptions-area textarea {
+    min-width: 50%;
+    width: 400px;
+    overflow: hidden;
+    resize: none;
+}
+
+.descriptions-area select {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.descriptions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+    min-height: 30px;
+    gap: 15px;
+    margin-bottom: 20px;
+    margin-top: 15px;
 }

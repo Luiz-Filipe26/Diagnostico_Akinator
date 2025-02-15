@@ -5,65 +5,190 @@ window.removeColumn = removeColumn;
 window.removeRow = removeRow;
 window.downloadJSON = downloadJSON;
 window.uploadJSON = uploadJSON;
+window.downloadDescriptionJSON = downloadDescriptionJSON;
+window.uploadDescriptionJSON = uploadDescriptionJSON;
+window.confirmDescription = confirmDescription;
 
+const table = document.getElementById("table");
+const inputDescriptionTextArea = document.getElementById('inputDescription');
+const diseaseSelect = document.getElementById('diseaseSelect');
+const inputDescription = document.getElementById('inputDescription');
 const resultToUser = document.getElementById("result");
 
+diseaseSelect.onmousedown = rebuildOptionsList;
+diseaseSelect.onchange = fillDescriptionText;
+
+inputDescriptionTextArea.addEventListener('input', autoSizeDescriptionTextArea);
+
 loadTableFromJSON();
+rebuildOptionsList();
+fillDescriptionText();
+
+function autoSizeDescriptionTextArea() {
+    const scrollY = window.scrollY;
+    inputDescriptionTextArea.style.height = 'auto';
+    inputDescriptionTextArea.style.height = inputDescriptionTextArea.scrollHeight + 'px';
+    window.scrollTo(0, scrollY);
+}
+
+function sendUserFeedBack(message, seconds = 1.5) {
+    resultToUser.textContent = message;
+
+    setTimeout(() => {
+        resultToUser.textContent = ' ';
+    }, seconds * 1000);
+}
+
+function fillDescriptionText() {
+    const selectedDisease = diseaseSelect.value;
+    const descriptionData = JSON.parse(localStorage.getItem("diseaseDescriptions")) || { diseases: [] };
+    const diseaseEntry = descriptionData.diseases.find(d => d.disease === selectedDisease);
+    inputDescriptionTextArea.value = diseaseEntry ? diseaseEntry.description : "";
+    autoSizeDescriptionTextArea();
+}
+
+function confirmDescription() {
+    const selectedDisease = diseaseSelect.value;
+    const description = inputDescriptionTextArea.value.trim();
+
+    if (!selectedDisease) return;
+
+    const descriptionData = JSON.parse(localStorage.getItem("diseaseDescriptions")) || { diseases: [] };
+    const existingEntry = descriptionData.diseases.find(d => d.disease === selectedDisease);
+
+    if (existingEntry) {
+        existingEntry.description = description;
+    } else {
+        descriptionData.diseases.push({ disease: selectedDisease, description });
+    }
+
+    localStorage.setItem("diseaseDescriptions", JSON.stringify(descriptionData));
+    sendUserFeedBack('Descrição salva na memória!');
+}
+
+function downloadDescriptionJSON() {
+    const data = localStorage.getItem("diseaseDescriptions");
+
+    if (!data) {
+        sendUserFeedBack('Nenhuma descrição salva na memória!');
+        return;
+    }
+
+    // Formata o JSON com indentação de 4 espaços
+    const formattedData = JSON.stringify(JSON.parse(data), null, 4);
+
+    const blob = new Blob([formattedData], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'diseaseDescriptions.json';
+    link.click();
+
+    sendUserFeedBack('Arquivo de descrições baixado com sucesso.');
+}
+
+
+function uploadDescriptionJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const jsonData = JSON.parse(e.target.result);
+            if (jsonData && Array.isArray(jsonData.diseases)) {
+                localStorage.setItem("diseaseDescriptions", JSON.stringify(jsonData));
+                sendUserFeedBack('JSON de descrições subido com sucesso!');
+            } else {
+                throw new Error("Formato inválido.");
+            }
+        } catch (error) {
+            sendUserFeedBack("Erro ao processar JSON!");
+            console.error("Erro ao processar JSON:", error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function rebuildOptionsList() {
+    const diseaseNames = getRowNames();
+
+    const removeOptions = (select) => {
+        while (select.firstChild) select.removeChild(select.firstChild)
+    };
+
+    const selectedValue = diseaseSelect.value;
+    removeOptions(diseaseSelect);
+
+    diseaseNames.forEach(diseaseName => {
+        const option = document.createElement('option');
+        option.value = diseaseName;
+        option.textContent = diseaseName;
+
+        if (diseaseName === selectedValue) {
+            option.selected = true;
+        }
+
+        diseaseSelect.appendChild(option);
+    });
+}
 
 function loadTableFromJSON() {
     const data = localStorage.getItem("tableData");
 
     if (!data) {
-        return resultToUser.textContent = 'Nenhuma tabela salva na memória.';
+        return sendUserFeedBack('Nenhuma tabela salva na memória.');
     }
 
     const jsonData = JSON.parse(data);
-
-    // Referências à tabela
-    const table = document.getElementById("table");
     const thead = table.querySelector("thead");
     const tbody = table.querySelector("tbody");
 
-    // Limpa a tabela atual, mantendo apenas a primeira coluna (Doença/Sintoma)
+    resetTable(thead, tbody);
+    const columns = createColumns(jsonData.columns);
+    columns.forEach(column => thead.rows[0].appendChild(column));
+    addRows(tbody, jsonData.rows);
+
+    sendUserFeedBack('Tabela carregada com sucesso!');
+}
+
+function resetTable(thead, tbody) {
     const headerRow = thead.rows[0];
     headerRow.innerHTML = '<th>Doença/Sintoma</th>';
     tbody.innerHTML = "";
-
-    // Adiciona as colunas do JSON
-    jsonData.columns.forEach(column => {
-        const newColumn = document.createElement("th");
-        newColumn.innerHTML = `
-                <input type="text" value="${column}">
-                <button class="btn-remove" onclick="removeColumn(event)"></button>
-            `;
-        headerRow.appendChild(newColumn);
-    });
-
-    // Adiciona as linhas da tabela
-    jsonData.rows.forEach(rowData => {
-        const newRow = tbody.insertRow();
-
-        // Primeira célula (Doença)
-        const firstCell = newRow.insertCell();
-        firstCell.innerHTML = `
-                <input type="text" value="${rowData.disease}">
-                <button class="btn-remove" onclick="removeRow(this)"></button>
-            `;
-
-        // Células de sintomas
-        rowData.values.forEach(value => {
-            const cell = newRow.insertCell();
-            cell.innerHTML = createSelectWithValue(value);
-        });
-    });
-
-    resultToUser.textContent = 'Tabela carregada com sucesso!';
 }
 
+function createColumns(columns) {
+    return columns.map(column => {
+        const newTableColumn = document.createElement("th");
+        newTableColumn.innerHTML = `
+            <input type="text" value="${column}">
+            <button class="btn-remove" onclick="removeColumn(event)"></button>
+        `;
+        return newTableColumn;
+    });
+}
 
+function addRows(tbody, rows) {
+    rows.forEach(rowData => {
+        const newRow = tbody.insertRow();
+
+        const diseaseCell = document.createElement("td");
+        diseaseCell.innerHTML = `
+            <input type="text" value="${rowData.disease}">
+            <button class="btn-remove" onclick="removeRow(this)"></button>
+        `;
+
+        const valueCells = rowData.values.map(value => {
+            const valueCell = document.createElement("td");
+            valueCell.innerHTML = createSelect(value);
+            return valueCell;
+        });
+
+        newRow.append(diseaseCell, ...valueCells);
+    });
+}
 
 function addColumn() {
-    const table = document.getElementById("table");
     const headerRow = table.tHead.rows[0];
     const colIndex = headerRow.cells.length;
 
@@ -82,13 +207,13 @@ function addColumn() {
 }
 
 function addRow() {
-    const table = document.getElementById("table").getElementsByTagName("tbody")[0];
-    const newRow = table.insertRow();
-    const columns = document.getElementById("table").tHead.rows[0].cells.length;
+    const tbody = table.getElementsByTagName("tbody")[0];
+    const newRow = tbody.insertRow();
+    const columns = table.tHead.rows[0].cells.length;
 
     const firstCell = newRow.insertCell();
     firstCell.innerHTML = `
-        <input type="text" value="Doença ${table.rows.length}">
+        <input type="text" value="Doença ${tbody.rows.length}">
         <button class="btn-remove" onclick="removeRow(this)"></button>
     `;
 
@@ -118,7 +243,7 @@ function removeRow(button) {
     }
 }
 
-function createSelectWithValue(selectedValue) {
+function createSelect(selectedValue = "") {
     return `
         <select>
             <option value="Irrelevante" ${selectedValue === "Irrelevante" ? "selected" : ""}>Irrelevante</option>
@@ -128,44 +253,46 @@ function createSelectWithValue(selectedValue) {
     `;
 }
 
+function getColumnsNames() {
+    return [...table.querySelectorAll("thead input")]
+        .map(input => input.value);
+}
 
-function createSelect() {
-    return `
-        <select>
-            <option value="Irrelevante">Irrelevante</option>
-            <option value="Médio">Médio</option>
-            <option value="Forte">Forte</option>
-        </select>
-    `;
+function getRows() {
+    return [...table.querySelectorAll("tbody tr")]
+        .map(row => [...row.cells]);
+}
+
+function getRowNames() {
+    return getRows().map(row => getRowName(row));
+}
+
+function getRowName(row) {
+    return row[0].querySelector("input").value;
+}
+
+function getRowContent(row) {
+    return row.slice(1).map(cell => cell.querySelector("select").value);
 }
 
 function generateJSON() {
-    const table = document.getElementById("table");
-    const data = { columns: [], rows: [] };
+    const data = {
+        columns: getColumnsNames(),
+        rows: getRows().map(row => ({
+            disease: getRowName(row),
+            values: getRowContent(row)
+        }))
+    };
 
-    document.querySelectorAll("#table thead input").forEach(input => {
-        data.columns.push(input.value);
-    });
-
-    document.querySelectorAll("#table tbody tr").forEach(row => {
-        const rowData = { disease: row.cells[0].querySelector("input").value, values: [] };
-        row.querySelectorAll("td select").forEach(select => {
-            rowData.values.push(select.value);
-        });
-        data.rows.push(rowData);
-    });
-
-    // Armazenar o JSON no localStorage
     localStorage.setItem("tableData", JSON.stringify(data));
 
-    // Exibir o JSON na tela
-    resultToUser.textContent = `Tabela salva na memória!`;
+    sendUserFeedBack(`Tabela salva na memória!`);
 }
 
 function uploadJSON(event) {
     const file = event.target.files[0];
     if (!file) {
-        resultToUser.textContent = 'Nenhum arquivo selecionado.';
+        sendUserFeedBack('Nenhum arquivo selecionado.');
         return;
     }
 
@@ -175,34 +302,36 @@ function uploadJSON(event) {
         try {
             const jsonData = JSON.parse(e.target.result);
 
-            if (jsonData.columns && Array.isArray(jsonData.rows)) {
-                localStorage.setItem("tableData", JSON.stringify(jsonData));
-                resultToUser.textContent = 'Tabela carregada com sucesso!';
-                loadTableFromJSON();
-            } else {
+            if (!jsonData.columns || !Array.isArray(jsonData.rows)) {
                 throw new Error("Formato de dados inválido.");
             }
+            localStorage.setItem("tableData", JSON.stringify(jsonData));
+            sendUserFeedBack('Tabela carregada com sucesso!');
+            loadTableFromJSON();
         } catch (error) {
-            resultToUser.textContent = 'Erro ao processar o arquivo JSON: ' + error.message;
+            sendUserFeedBack('Erro ao processar o arquivo JSON: ' + error.message);
         }
     };
 
-    reader.readAsText(file);  // Lê o arquivo como texto
+    reader.readAsText(file);
 }
-
 
 function downloadJSON() {
     const data = localStorage.getItem("tableData");
 
-    if (data) {
-        const blob = new Blob([data], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'tableData.json';
-        link.click();
-
-        resultToUser.textContent = 'Arquivo JSON baixado com sucesso.';
-    } else {
-        resultToUser.textContent = 'Nenhuma tabela salva na memória!';
+    if (!data) {
+        sendUserFeedBack('Nenhuma tabela salva na memória!');
+        return;
     }
+
+    // Formata o JSON com indentação de 4 espaços
+    const formattedData = JSON.stringify(JSON.parse(data), null, 4);
+
+    const blob = new Blob([formattedData], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'tableData.json';
+    link.click();
+
+    sendUserFeedBack('Arquivo JSON baixado com sucesso.');
 }
