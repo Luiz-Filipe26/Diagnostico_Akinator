@@ -53,16 +53,18 @@ function updateQuestionProgress() {
 function structureTableDataForAnalysis(tableData) {
     return tableData.rows.map(row => ({
         category: row.disease,
-        attributes: tableData.columns
-            .map((col, index) => row.values[index] !== "Irrelevante" ? `${col}_${row.values[index]}` : null)
-            .filter(Boolean)
+        attributes: tableData.columns.map((col, index) => ({
+            attribute: col,
+            value: row.values[index]
+        }))
     }));
 }
 
-function strucutureAnswersForAnalysis(answers) {
-    return Object.keys(answers)
-        .filter(symptom => answers[symptom] !== "Irrelevante") // Filtra os sintomas com resposta "Irrelevante"
-        .map(symptom => `${symptom}_${answers[symptom]}`); // Combina o sintoma com a resposta
+function structureAnswersForAnalysis(answers) {
+    return Object.entries(answers).map(([attribute, value]) => ({
+        attribute,
+        value
+    }));
 }
 
 function finishAnalysis() {

@@ -1,21 +1,26 @@
 export default class Id3_analyzer {
     /**
+      * @typedef {Object} AttributeValue
+      * @property {string} attribute - Nome do atributo.
+      * @property {string} value - Valor do atributo.
+      */
+
+    /**
       * @typedef {Object} TrainingDataItem
       * @property {string} category - Nome da categoria.
-      * @property {string[]} attributes - Lista de atributos para a categoria.
+      * @property {AttributeValue[]} attributes - Lista de atributos para a categoria.
       */
 
     /**
      * @typedef {Object} DecisionTreeNode
      * @property {string|null} attributeOfQuestion - Atributo da questão ou null se for folha.
-     * @property {string|null} category - Categoria de uma folha.
-     * @property {DecisionTreeNode|null} yes - Sub-árvore para a resposta "sim" ou null se folha.
-     * @property {DecisionTreeNode|null} no - Sub-árvore para a resposta "não" ou null se folha.
+     * @property {string|null} category - Categoria de uma folha, ou null se não for folha.
+     * @property {Object.<string, DecisionTreeNode>|null} children - Mapeia os valores do atributo para sub-nós, ou null se for folha.
      */
 
     /**
      * @param {TrainingDataItem[]} trainingData
-     * @param {string[]} answers
+     * @param {AttributeValue[]} answers
      * @returns {string}
      */
     static predictWithTrainingData(trainingData, answers) {
@@ -95,7 +100,7 @@ export default class Id3_analyzer {
      * @returns {DecisionTreeNode}
      */
     static createLeafNode(category) {
-        return {attributeOfQuestion: null, category, yes: null, no: null};
+        return { attributeOfQuestion: null, category, yes: null, no: null };
     }
 
     /**
@@ -180,8 +185,8 @@ export default class Id3_analyzer {
     }
 
     /**
-     * Calcular o ganho de informação G(S) por atributo
-     * G(S) = H(D) − H(S|D)
+     * Calcular o ganho de informação G(A) por atributo
+     * G(A) = H(D) − H(A|D)
      * @param {number} initialEntropy
      * @param {TrainingDataItem[]} trainingDataSubset
      * @param {string} attribute
@@ -190,72 +195,75 @@ export default class Id3_analyzer {
     static calculateInformationGain(trainingDataSubset, attribute) {
         const categoryToOccurrencesAmount = this.getCategoryToOccurrencesAmount(trainingDataSubset);
 
-        const initialEntropy = this.calculateInitialEntropy(categoryToOccurrencesAmount, trainingDataSubset.length)
-        const conditionalEntropySum = this.calculateConditionalEntropySum(trainingDataSubset, categoryToOccurrencesAmount, attribute);
+        const initialEntropy = this.calculateInitialEntropy(categoryToOccurrencesAmount, trainingDataSubset.length);
+        const conditionalEntropySum = this.calculateConditionalEntropy(trainingDataSubset, [...categoryToOccurrencesAmount.keys()], attribute);
         return initialEntropy - conditionalEntropySum;
     }
 
     /**
      * Calcular a entropia inicial H(D)
-     * H(D) = -∑ p(d1) log2 p(d1)  
+     * H(D) = -∑ p(c_i) log2 p(c_i)
      * @param {Map<string, number>} categoryToOccurrencesAmount
      * @param {number} totalCases
      * @returns {number}
      */
     static calculateInitialEntropy(categoryToOccurrencesAmount, totalCases) {
-        if (totalCases == 0) return 0;
+        if (totalCases === 0) return 0;
 
         return [...categoryToOccurrencesAmount.values()].reduce((totalEntropy, count) => {
             const probability = count / totalCases;
-            return totalEntropy - (probability || 1) * Math.log2(probability || 1); // Garante que probability nunca seja 0
+            if (probability <= 0) {
+                return totalEntropy
+            }
+            return totalEntropy - probability * Math.log2(probability);
         }, 0);
     }
 
     /**
-     * Calcular a soma da entropia condicional (H(S|v))
-     * H(S|D) = ∑ P(v) H(D|v)
-     * @param {TrainingDataItem[]} trainingDataSubset
-     * @param {Map<string, number>} categoryToOccurrencesAmount
-     * @param {string} attribute
-     * @returns {number}
-     */
-    static calculateConditionalEntropySum(trainingDataSubset, categoryToOccurrencesAmount, attribute) {
-        const relevantCases = trainingDataSubset.filter(dataItem =>
-            dataItem.attributes.includes(attribute)
-        );
-
-        const totalRelevantCases = relevantCases.length;
-        if (totalRelevantCases == 0) return 0;
-
-        return [...categoryToOccurrencesAmount.values()].reduce((sum, count) => {
-            const p_v = count / totalRelevantCases;
-            sum += p_v * this.calculateConditionalEntropy(trainingDataSubset, [...categoryToOccurrencesAmount.keys()], attribute);
-            return sum;
-        }, 0);
-    }
-
-    /**
-     * Calcular a entropia condicional H(D|v) para todas as categorias por atributo.
-     * H(D|v) = -∑ p(d1 | v) log2 p(d1 | v)  
+     * Calcular a entropia condicional H(D|A) para um atributo específico.
+     * H(D|A) = ∑ P(v) * H(D|v)
      * @param {TrainingDataItem[]} trainingDataSubset
      * @param {string[]} categories
      * @param {string} attribute
      * @returns {number}
      */
     static calculateConditionalEntropy(trainingDataSubset, categories, attribute) {
-        if (trainingDataSubset.length == 0) {
-            return 0;
-        }
+        const attributeValues = new Set(trainingDataSubset.flatMap(item =>
+            item.attributes.filter(attr => attr.attribute === attribute).map(attr => attr.value)
+        ));
 
-        return categories.reduce((sum, category) => {
-            const numOfFilteredItems = trainingDataSubset.filter(item => item.category === category && item.attributes.includes(attribute)).length;
+        return [...attributeValues].reduce((conditionalEntropy, value) => {
+            const dataWithAttributeValue = trainingDataSubset.filter(item =>
+                item.attributes.some(attr => attr.attribute === attribute && attr.value === value)
+            );
 
-            if (numOfFilteredItems == 0) {
-                return sum;
-            }
+            const totalFiltered = dataWithAttributeValue.length;
+            if (totalFiltered === 0) return conditionalEntropy;
 
-            const p_d_given_v = numOfFilteredItems / trainingDataSubset.length;
-            return sum - (p_d_given_v * Math.log2(p_d_given_v));
+            const valueProbability = totalFiltered / trainingDataSubset.length;
+            const valueEntropy = this.calculateValueEntropy(categories, dataWithAttributeValue);
+
+            return conditionalEntropy + valueProbability * valueEntropy;
+        }, 0);
+    }
+
+    /**
+     * Calcular a entropia de um valor para um conjunto de dados filtrado.
+     * H(D|v) = -∑ P(c_i | v) log2 P(c_i | v)
+     * @param {string[]} categories
+     * @param {TrainingDataItem[]} filteredData
+     * @returns {number}
+     */
+    static calculateValueEntropy(categories, filteredData) {
+        const totalFiltered = filteredData.length;
+
+        const categoryProbabilities = categories.map(category => {
+            const countInSubset = filteredData.filter(item => item.category === category).length;
+            return countInSubset / totalFiltered;
+        }).filter(prob => prob > 0);
+
+        return categoryProbabilities.reduce((sum, categoryProbability) => {
+            return sum - categoryProbability * Math.log2(categoryProbability);
         }, 0);
     }
 
