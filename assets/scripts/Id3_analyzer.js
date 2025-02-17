@@ -37,22 +37,24 @@ export default class Id3_analyzer {
      * @returns {string}
      */
     static predict(decisionTree, answers) {
-        const isLeaf = (currentNode) => Boolean(currentNode.category);
-
         let currentNode = decisionTree;
-
-        while (!isLeaf(currentNode)) {
-            const hasAttribute = answers.includes(currentNode.attributeOfQuestion);
-
-            if (hasAttribute) {
-                currentNode = currentNode.yes;
-            } else {
-                currentNode = currentNode.no;
+    
+        while (!currentNode.category) {
+            const answerForAttribute = answers.find(answer =>
+                answer.attribute === currentNode.attributeOfQuestion
+            );
+    
+            if (!answerForAttribute) {
+                currentNode = currentNode.children[Object.keys(currentNode.children)[0]] || currentNode;
+                continue;
             }
+            currentNode = currentNode.children[answerForAttribute.value] || currentNode;
+ 
         }
-
+    
         return currentNode.category;
     }
+    
 
     /**
      * @param {TrainingDataItem[]} trainingDataSubset
@@ -75,22 +77,27 @@ export default class Id3_analyzer {
         }
 
         const bestAttribute = this.getBestInformationGainAttribute(trainingDataSubset, attributes);
-        const [yesData, noData] = this.splitDataByAttribute(trainingDataSubset, bestAttribute);
+        const attributeValues = new Set(trainingDataSubset.flatMap(item =>
+            item.attributes.filter(attr => attr.attribute === bestAttribute).map(attr => attr.value)
+        ));
 
-        // Define os nós filhos considerando o caso de subconjuntos vazios
-        const nodeYes = yesData.length > 0
-            ? this.buildDecisionTree(yesData, attributes.filter(a => a !== bestAttribute))
-            : this.createLeafNode(this.getMostFrequentCategory(trainingDataSubset));
+        const children = {};
+        attributeValues.forEach(value => {
+            const childTrainingDataSubset = trainingDataSubset.filter(item =>
+                item.attributes.some(attr => attr.attribute === bestAttribute && attr.value === value)
+            );
 
-        const nodeNo = noData.length > 0
-            ? this.buildDecisionTree(noData, attributes.filter(a => a !== bestAttribute))
-            : this.createLeafNode(this.getMostFrequentCategory(trainingDataSubset));
+            if (childTrainingDataSubset.length > 0) {
+                children[value] = this.buildDecisionTree(childTrainingDataSubset, attributes.filter(a => a !== bestAttribute));
+            } else {
+                children[value] = this.createLeafNode(this.getMostFrequentCategory(trainingDataSubset));
+            }
+        });
 
         return {
             attributeOfQuestion: bestAttribute,
             category: null,
-            yes: nodeYes,
-            no: nodeNo
+            children
         };
     }
 
@@ -100,7 +107,7 @@ export default class Id3_analyzer {
      * @returns {DecisionTreeNode}
      */
     static createLeafNode(category) {
-        return { attributeOfQuestion: null, category, yes: null, no: null };
+        return { attributeOfQuestion: null, category, children: null };
     }
 
     /**
@@ -125,17 +132,6 @@ export default class Id3_analyzer {
         }
 
         return null;
-    }
-
-    /**
-     * @param {TrainingDataItem[]} trainingDataSubset
-     * @param {string} attribute
-     * @returns {[TrainingDataItem[], TrainingDataItem[]]}
-     */
-    static splitDataByAttribute(trainingDataSubset, attribute) {
-        const yesData = trainingDataSubset.filter(categoryData => categoryData.attributes.includes(attribute));
-        const noData = trainingDataSubset.filter(categoryData => !categoryData.attributes.includes(attribute));
-        return [yesData, noData];
     }
 
     /**
