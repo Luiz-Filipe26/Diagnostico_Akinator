@@ -180,7 +180,8 @@ export default class Id3_analyzer {
     }
 
     /**
-     * Calcular o ganho de informação (G(S) = H(D) − H(S|D)) por atributo
+     * Calcular o ganho de informação G(S) por atributo
+     * G(S) = H(D) − H(S|D)
      * @param {number} initialEntropy
      * @param {TrainingDataItem[]} trainingDataSubset
      * @param {string} attribute
@@ -195,6 +196,8 @@ export default class Id3_analyzer {
     }
 
     /**
+     * Calcular a entropia inicial H(D)
+     * H(D) = -∑ p(d1) log2 p(d1)  
      * @param {Map<string, number>} categoryToOccurrencesAmount
      * @param {number} totalCases
      * @returns {number}
@@ -210,6 +213,7 @@ export default class Id3_analyzer {
 
     /**
      * Calcular a soma da entropia condicional (H(S|v))
+     * H(S|D) = ∑ P(v) H(D|v)
      * @param {TrainingDataItem[]} trainingDataSubset
      * @param {Map<string, number>} categoryToOccurrencesAmount
      * @param {string} attribute
@@ -232,7 +236,7 @@ export default class Id3_analyzer {
 
     /**
      * Calcular a entropia condicional H(D|v) para todas as categorias por atributo.
-     * H(D|v) = p(d|v) * log2(p(d|v))
+     * H(D|v) = -∑ p(d1 | v) log2 p(d1 | v)  
      * @param {TrainingDataItem[]} trainingDataSubset
      * @param {string[]} categories
      * @param {string} attribute
