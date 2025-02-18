@@ -8,7 +8,7 @@ export default class Id3_analyzer {
     /**
       * @typedef {Object} TrainingDataItem
       * @property {string} category - Nome da categoria.
-      * @property {AttributeValue[]} attributes - Lista de atributos para a categoria.
+      * @property {AttributeValue[]} attributeValues - Lista de valores dos atributos para a categoria.
       */
 
     /**
@@ -38,30 +38,29 @@ export default class Id3_analyzer {
      */
     static predict(decisionTree, answers) {
         let currentNode = decisionTree;
-    
+
         while (!currentNode.category) {
             const answerForAttribute = answers.find(answer =>
                 answer.attribute === currentNode.attributeOfQuestion
             );
-    
+
             if (!answerForAttribute) {
                 currentNode = currentNode.children[Object.keys(currentNode.children)[0]] || currentNode;
                 continue;
             }
             currentNode = currentNode.children[answerForAttribute.value] || currentNode;
- 
+
         }
-    
+
         return currentNode.category;
     }
     
-
     /**
      * @param {TrainingDataItem[]} trainingDataSubset
      * @returns {string[]}
      */
     static getAttributes(trainingDataSubset) {
-        return [...new Set(trainingDataSubset.flatMap(category => category.attributes))];
+        return [...new Set(trainingDataSubset.flatMap(item => item.attributes))];
     }
 
     /**
@@ -76,7 +75,7 @@ export default class Id3_analyzer {
             return leafNode;
         }
 
-        const bestAttribute = this.getBestInformationGainAttribute(trainingDataSubset, attributes);
+        const bestAttribute = this.findBestInformationGainAttribute(trainingDataSubset, attributes);
         const attributeValues = new Set(trainingDataSubset.flatMap(item =>
             item.attributes.filter(attr => attr.attribute === bestAttribute).map(attr => attr.value)
         ));
@@ -117,16 +116,13 @@ export default class Id3_analyzer {
      * @returns {DecisionTreeNode|null}
      */
     static getLeafNode(trainingDataSubset, attributes) {
-        if (trainingDataSubset.length == 0) {
-            return null;
-        }
-
         const isAllOfSameCategory = trainingDataSubset.every(item => item.category === trainingDataSubset[0].category);
 
         if (isAllOfSameCategory) {
             return this.createLeafNode(trainingDataSubset[0].category);
         }
-        else if (attributes.length == 0) {
+
+        if (attributes.length == 0) {
             const category = this.getMostFrequentCategory(trainingDataSubset);
             return this.createLeafNode(category);
         }
@@ -158,7 +154,7 @@ export default class Id3_analyzer {
      * @param {string[]} attributes
      * @returns {string}
      */
-    static getBestInformationGainAttribute(trainingDataSubset, attributes) {
+    static findBestInformationGainAttribute(trainingDataSubset, attributes) {
         const attributeToInformationGain = this.getAttributeToInformationGain(trainingDataSubset, attributes);
 
         return [...attributeToInformationGain.entries()].reduce(

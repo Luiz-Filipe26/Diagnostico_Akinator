@@ -70,7 +70,7 @@ function structureAnswersForAnalysis(answers) {
 function finishAnalysis() {
     document.getElementById("evaluationCard").classList.remove("active");
     const trainingData = structureTableDataForAnalysis(tableData);
-    const answersForAnalysis = strucutureAnswersForAnalysis(answers);
+    const answersForAnalysis = structureAnswersForAnalysis(answers);
     const probableDisease = Id3_analyzer.predictWithTrainingData(trainingData, answersForAnalysis);
 
     // Obter a descrição da doença
