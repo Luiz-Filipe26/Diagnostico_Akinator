@@ -18,9 +18,21 @@ if (!tableData) {
 }
 
 function startEvaluation() {
+    //return jumpQuestionary();
     document.querySelector(".intro").classList.add("hidden");
-    document.getElementById("evaluationCard").classList.add("active");
+    document.getElementById("evaluationCard").classList.remove("hidden");
     showMessage("");
+}
+
+function jumpQuestionary() {
+    document.querySelector(".intro").classList.add("hidden");
+    document.getElementById("evaluationCard").classList.add("hidden");
+
+    symptoms.forEach(symptom => {
+        answers[symptom] = "Forte";
+    });
+
+    finishAnalysis();
 }
 
 function nextSymptom() {
@@ -53,7 +65,7 @@ function updateQuestionProgress() {
 function structureTableDataForAnalysis(tableData) {
     return tableData.rows.map(row => ({
         category: row.disease,
-        attributes: tableData.columns.map((col, index) => ({
+        attributeValues: tableData.columns.map((col, index) => ({
             attribute: col,
             value: row.values[index]
         }))
@@ -68,17 +80,15 @@ function structureAnswersForAnalysis(answers) {
 }
 
 function finishAnalysis() {
-    document.getElementById("evaluationCard").classList.remove("active");
+    document.getElementById("evaluationCard").classList.add("hidden");
     const trainingData = structureTableDataForAnalysis(tableData);
     const answersForAnalysis = structureAnswersForAnalysis(answers);
     const probableDisease = Id3_analyzer.predictWithTrainingData(trainingData, answersForAnalysis);
 
-    // Obter a descrição da doença
     const descriptionData = JSON.parse(localStorage.getItem("diseaseDescriptions")) || { diseases: [] };
     const diseaseEntry = descriptionData.diseases.find(d => d.disease === probableDisease);
     const description = diseaseEntry ? diseaseEntry.description : "Não há descrição para a doença.";
 
-    // Substituir as quebras de linha por <br> para formatar corretamente no HTML
     const formattedDescription = description.replace(/\n/g, "<br>");
 
     // Mostrar a mensagem com o nome da doença e a descrição

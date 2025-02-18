@@ -54,7 +54,6 @@ h1 {
 }
 
 .card {
-    display: none;
     border: 1px solid #ccc;
     padding: 20px;
     width: 300px;
@@ -80,15 +79,30 @@ button:hover {
     background-color: #1e6b99;
 }
 
+.mensagem {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #333;
+}
+
+.mensagem strong {
+    color: #0066CC;
+    font-size: 1.2em;
+}
+
 .hidden {
     display: none;
 }
 
-.active {
-    display: block;
-}
-
-/* Estilizando apenas os labels dentro do cartão */
 .card label {
     display: block;
     text-align: left;

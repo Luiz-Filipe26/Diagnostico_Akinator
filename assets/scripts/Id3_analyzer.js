@@ -60,7 +60,7 @@ export default class Id3_analyzer {
      * @returns {string[]}
      */
     static getAttributes(trainingDataSubset) {
-        return [...new Set(trainingDataSubset.flatMap(item => item.attributes))];
+        return [...new Set(trainingDataSubset.flatMap(item => item.attributeValues.map(attr => attr.attribute)))];
     }
 
     /**
@@ -77,13 +77,13 @@ export default class Id3_analyzer {
 
         const bestAttribute = this.findBestInformationGainAttribute(trainingDataSubset, attributes);
         const attributeValues = new Set(trainingDataSubset.flatMap(item =>
-            item.attributes.filter(attr => attr.attribute === bestAttribute).map(attr => attr.value)
+            item.attributeValues.filter(attr => attr.attribute === bestAttribute).map(attr => attr.value)
         ));
 
         const children = {};
         attributeValues.forEach(value => {
             const childTrainingDataSubset = trainingDataSubset.filter(item =>
-                item.attributes.some(attr => attr.attribute === bestAttribute && attr.value === value)
+                item.attributeValues.some(attr => attr.attribute === bestAttribute && attr.value === value)
             );
 
             if (childTrainingDataSubset.length > 0) {
@@ -221,12 +221,12 @@ export default class Id3_analyzer {
      */
     static calculateConditionalEntropy(trainingDataSubset, categories, attribute) {
         const attributeValues = new Set(trainingDataSubset.flatMap(item =>
-            item.attributes.filter(attr => attr.attribute === attribute).map(attr => attr.value)
+            item.attributeValues.filter(attr => attr.attribute === attribute).map(attr => attr.value)
         ));
 
         return [...attributeValues].reduce((conditionalEntropy, value) => {
             const dataWithAttributeValue = trainingDataSubset.filter(item =>
-                item.attributes.some(attr => attr.attribute === attribute && attr.value === value)
+                item.attributeValues.some(attr => attr.attribute === attribute && attr.value === value)
             );
 
             const totalFiltered = dataWithAttributeValue.length;
