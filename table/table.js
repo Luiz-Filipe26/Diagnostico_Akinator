@@ -336,7 +336,7 @@ function downloadJSON() {
     const blob = new Blob([formattedData], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'tableData.json';
+    link.download = 'trainingData.json';
     link.click();
 
     sendUserFeedBack('Arquivo JSON para baixar preparado com sucesso.');
