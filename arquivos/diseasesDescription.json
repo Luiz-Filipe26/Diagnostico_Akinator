@@ -9,12 +9,12 @@
             "description": "A Neurotoxemia Aquática é causada pelo parasita Neurotoxoplasma aquatilis, transmitido por águas contaminadas.\nO parasita se aloja no sistema nervoso periférico e libera uma toxina que compromete a comunicação entre o cérebro e o corpo.\nInicialmente assintomática, a infecção se agrava com convulsões, perda de coordenação motora e dificuldades respiratórias.\nSe não tratada, pode levar à paralisia permanente ou insuficiência respiratória fatal.\n\nSintomas: O sistema nervoso é afetado, comprometendo a comunicação entre o cérebro e o corpo.\nOs sintomas começam sutis, mas podem evoluir para tremores, perda de coordenação, dificuldade para respirar e convulsões.\nEm casos graves, a doença pode causar paralisia ou insuficiência respiratória."
         },
         {
-            "disease": "Cádmiocondrose",
-            "description": "A Cádmiocondrose é uma doença resultante da falta crônica de cálcio e ingestão de peixes contaminados com cádmio, um metal pesado.\nO corpo substitui o cálcio por cádmio nos ossos, o que compromete sua estrutura e integridade.\nO cádmio enfraquece os ossos, tornando-os mais suscetíveis a fraturas e resultando em dores e limitações de mobilidade.\n\nSintomas: Os ossos são enfraquecidos ao substituir o cálcio por cádmio, tornando-os frágeis e doloridos.\nCom o tempo, a doença causa osteoporose precoce, fadiga, dores musculares e maior risco de fraturas, limitando a mobilidade."
-        },
-        {
             "disease": "Polusis Stressiva",
             "description": "Polusis Stressiva é uma doença somática resultante da exposição a ambientes urbanos poluídos, com baixos níveis de oxigênio e alta concentração de partículas tóxicas.\nA doença se manifesta em pessoas altamente sensíveis ao estresse ambiental, especialmente em grandes cidades ou regiões industriais. A poluição e o estresse geram um ciclo vicioso, onde os sintomas físicos aumentam a ansiedade, piorando a percepção de falta de ar e cansaço.\n\nSintomas: Cansaço extremo, dificuldade para respirar, dores de cabeça e tontura. Também pode afetar a concentração, provocar insônia e gerar crises de ansiedade, com palpitações e sensação de sufocamento."
+        },
+        {
+            "disease": "Cádmiocondrose",
+            "description": "A Cádmiocondrose é uma doença resultante da falta crônica de cálcio e ingestão de peixes contaminados com cádmio, um metal pesado.\nO corpo substitui o cálcio por cádmio nos ossos, o que compromete sua estrutura e integridade.\nO cádmio enfraquece os ossos, tornando-os mais suscetíveis a fraturas e resultando em dores e limitações de mobilidade.\n\nSintomas: Os ossos são enfraquecidos ao substituir o cálcio por cádmio, tornando-os frágeis e doloridos.\nCom o tempo, a doença causa osteoporose precoce, fadiga, dores musculares e maior risco de fraturas, limitando a mobilidade."
         }
     ]
 }

@@ -1,0 +1,36 @@
+1. Toximiosite
+- Fadiga: Forte
+- Dor Muscular / Fraqueza Muscular: Forte
+- Fraqueza e Movimentos Lentos: Forte
+- Tremores Musculares: Médio
+- Problemas Cognitivos / Insônia: Médio
+
+2. Neurotoxemia Aquática
+- Tremores Musculares: Forte
+- Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora: Forte
+- Convulsões: Forte
+- Falta de Equilíbrio: Forte
+- Dificuldade Respiratória: Forte
+- Visão Turva: Médio
+- Dor de Cabeça: Médio
+- Aumento da Pressão Arterial: Médio
+- Paralisia Progressiva: Forte
+- Náuseas e Vômitos: Médio
+- Desorientação Mental / Sintomas de Ansiedade: Médio
+- Febre: Médio
+
+3. Cádmiocondrose
+- Fadiga: Médio
+- Dor óssea crônica / Osteoporose precoce: Forte
+- Diminuição da Densidade Óssea: Médio
+- Tensão Muscular: Médio
+
+4. Polusis Stressiva
+- Fadiga: Forte
+- Tontura e Dificuldade de Coordenação / Perda de Coordenação Motora: Médio
+- Problemas Cognitivos / Insônia: Médio
+- Falta de Equilíbrio: Médio
+- Dificuldade Respiratória: Forte
+- Dor de Cabeça: Médio
+- Desorientação Mental / Sintomas de Ansiedade: Forte
+- Palpitações Cardíacas: Médio
