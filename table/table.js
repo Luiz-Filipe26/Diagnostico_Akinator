@@ -221,6 +221,7 @@ function addRow() {
         const cell = newRow.insertCell();
         cell.innerHTML = createSelect();
     }
+    rebuildOptionsList();
 }
 
 function removeColumn(event) {
@@ -241,6 +242,7 @@ function removeRow(button) {
     if (row && row.parentNode.rows.length > 1) {
         row.remove();
     }
+    rebuildOptionsList();
 }
 
 function createSelect(selectedValue = "") {
@@ -317,8 +319,12 @@ function uploadJSON(event) {
 }
 
 function downloadJSON() {
-    const data = localStorage.getItem("tableData");
+    const userConfirmed = confirm('Deseja confirmar mudanças antes de baixar?');
+    if (userConfirmed) {
+        generateJSON();
+    }
 
+    const data = localStorage.getItem("tableData");
     if (!data) {
         sendUserFeedBack('Nenhuma tabela salva na memória!');
         return;
@@ -333,5 +339,5 @@ function downloadJSON() {
     link.download = 'tableData.json';
     link.click();
 
-    sendUserFeedBack('Arquivo JSON baixado com sucesso.');
+    sendUserFeedBack('Arquivo JSON para baixar preparado com sucesso.');
 }
